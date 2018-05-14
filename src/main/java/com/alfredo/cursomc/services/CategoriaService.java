@@ -2,14 +2,16 @@ package com.alfredo.cursomc.services;
 
 import java.util.List;
 import java.util.Optional;
-import com.alfredo.cursomc.dto.CategoriaDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Service;
+
 import com.alfredo.cursomc.domain.Categoria;
+import com.alfredo.cursomc.dto.CategoriaDTO;
 import com.alfredo.cursomc.repositories.CategoriaRepository;
 import com.alfredo.cursomc.services.exceptions.DataIntegrityException;
 import com.alfredo.cursomc.services.exceptions.ObjectNotFoundException;
@@ -33,8 +35,9 @@ public class CategoriaService {
 	}
 	
 	public Categoria update(Categoria obj) {
-		find(obj.getId());
-		return repo.save(obj);
+		Categoria newObj = find(obj.getId());
+		updateData(newObj, obj);
+		return repo.save(newObj);
 		
 	}
 	
@@ -59,5 +62,8 @@ public class CategoriaService {
 	
 	public Categoria fromDTO(CategoriaDTO objDto) {
 		return new Categoria(objDto.getId(), objDto.getNome());
+	}
+	private void updateData(Categoria newObj, Categoria obj) {
+			newObj.setNome(obj.getNome());
 	}
 }
