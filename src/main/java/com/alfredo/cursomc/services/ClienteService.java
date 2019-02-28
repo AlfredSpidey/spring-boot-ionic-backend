@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.alfredo.cursomc.domain.enums.Perfil;
 
 import com.alfredo.cursomc.domain.Cidade;
 import com.alfredo.cursomc.domain.Cliente;
@@ -22,6 +23,8 @@ import com.alfredo.cursomc.repositories.ClienteRepository;
 import com.alfredo.cursomc.repositories.EnderecoRepository;
 import com.alfredo.cursomc.services.exceptions.DataIntegrityException;
 import com.alfredo.cursomc.services.exceptions.ObjectNotFoundException;
+import com.alfredo.cursomc.security.UserSS;
+import com.alfredo.cursomc.services.exceptions.AuthorizationException;
 
 @Service
 public class ClienteService {
@@ -35,10 +38,17 @@ public class ClienteService {
 	@Autowired
 	private EnderecoRepository enderecoRepository;
 
-	public Cliente find(Integer id) {
- 		Optional<Cliente> obj = repo.findById(id);
- 		return obj.orElseThrow(() -> new ObjectNotFoundException(
- 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName())); 	}
+public Cliente find(Integer id) {
+		
+		UserSS user = UserService.authenticated();
+		if (user==null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado");
+		}
+		
+		Optional<Cliente> obj = repo.findById(id);
+		return obj.orElseThrow(() -> new ObjectNotFoundException(
+				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
+	}
 	@Transactional
 	public Cliente insert(Cliente obj) {
 		obj.setId(null);
