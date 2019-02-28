@@ -14,6 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Column;
+import java.util.stream.Collectors;
+import javax.persistence.FetchType;
+import com.alfredo.cursomc.domain.enums.Perfil;
 
 import com.alfredo.cursomc.domain.enums.TipoCliente;
 
@@ -42,6 +45,11 @@ public class Cliente implements Serializable{
 	@CollectionTable(name ="TELEFONE")
 	private Set<String> telefones = new HashSet<>();
 	
+	@ElementCollection(fetch=FetchType.EAGER)
+	@CollectionTable(name="PERFIS")
+	private Set<Integer> perfis = new HashSet<>();
+
+	
 	@JsonIgnore
 	@OneToMany(mappedBy="cliente")
 	private List<Pedido> pedidos = new ArrayList<>();
@@ -54,11 +62,12 @@ public class Cliente implements Serializable{
 		this.cpfOuCnpj = cpfOuCnpj;
 		this.tipo = (tipo==null) ? null : tipo.getCod();
 		this.senha = senha;
+		addPerfil(Perfil.CLIENTE);
 	}
 	
 		
 	public Cliente() {
-		
+		addPerfil(Perfil.CLIENTE);
 	}
 	public Integer getId() {
 		return id;
@@ -143,6 +152,12 @@ public class Cliente implements Serializable{
 		this.pedidos = pedidos;
 	}
 	
-	
+	public Set<Perfil> getPerfis() {
+		return perfis.stream().map(x -> Perfil.toEnum(x)).collect(Collectors.toSet());
+	}
+
+	public void addPerfil(Perfil perfil) {
+		perfis.add(perfil.getCod());
+	}
 	
 }
