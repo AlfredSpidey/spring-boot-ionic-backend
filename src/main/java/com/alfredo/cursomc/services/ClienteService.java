@@ -2,6 +2,7 @@ package com.alfredo.cursomc.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.alfredo.cursomc.domain.enums.Perfil;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alfredo.cursomc.domain.Cidade;
 import com.alfredo.cursomc.domain.Cliente;
@@ -37,6 +39,9 @@ public class ClienteService {
 
 	@Autowired
 	private EnderecoRepository enderecoRepository;
+	
+	@Autowired
+	private S3Service s3Service;
 
 public Cliente find(Integer id) {
 		
@@ -88,6 +93,10 @@ public Cliente find(Integer id) {
 	private void updateData(Cliente newObj, Cliente obj) {
 		newObj.setNome(obj.getNome());
 		newObj.setEmail(obj.getEmail());
+	}
+	
+	public URI uploadProfilePicture(MultipartFile multipartFile) {
+		return s3Service.uploadFile(multipartFile);
 	}
 
 	public Cliente fromDTO(ClienteNewDTO objDto) {

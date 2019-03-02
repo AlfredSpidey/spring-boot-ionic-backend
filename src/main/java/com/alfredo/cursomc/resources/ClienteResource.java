@@ -3,6 +3,7 @@ package com.alfredo.cursomc.resources;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -77,4 +78,10 @@ public class ClienteResource {
 					.path("/{id}").buildAndExpand(obj.getId()).toUri();
 			return ResponseEntity.created(uri).build();
 		}
+	
+	@RequestMapping(value="/picture", method=RequestMethod.POST)
+	public ResponseEntity<Void> uploadProfilePicture(@RequestParam(name="file") MultipartFile file) {
+		URI uri = service.uploadProfilePicture(file);
+		return ResponseEntity.created(uri).build();
+	}
 }
